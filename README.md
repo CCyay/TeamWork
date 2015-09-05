@@ -1,2 +1,3 @@
 # TeamWork
-This is for our ream to know and use this tool.
+This is for our team to know and use this tool.
+xhdjkg kfd yskfd skbad ksa.
