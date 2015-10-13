@@ -1,0 +1,157 @@
+#include<iostream>
+using namespace std;
+//银行家算法
+class massage
+{
+public:
+	int type;
+	int request[3];
+	massage(int x[3])
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			request[i] = x[i];
+		}
+		type = 1;
+	}
+	massage(int x)
+	{
+		type = x;
+	}
+};
+class Process
+{
+private:
+	int myMax[3];
+	int myAllocation[3];
+	int myNeed[3];
+public:
+	Process(int x[3],int y[3])
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			myMax[i] = x[i];
+			myAllocation[i] = y[i];
+			myNeed[i] = myMax[i] - myAllocation[i];
+		}
+	}
+	int* getMax()
+	{
+		return myMax;
+	}
+	int* getAllocation()
+	{
+		return myAllocation;
+	}
+	int* getNeed()
+	{
+		return myNeed;
+	}
+massage request(int x[3])
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (x[i]>myNeed[i])
+				return massage(0);
+		}
+		return massage(x);
+	}
+bool distribute(int x[3])
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			myAllocation[i]+= x[i];
+			myNeed[i] -= x[i];
+		}
+		return true;
+	}
+};
+bool Safety(massage M,int Work[3],Process* Queue[5] )
+{
+	if (M.type == 0)
+		return false;
+	int Max[5][3];
+	int Allocation[5][3];
+	int Need[5][3];
+	if (M.type == 1)
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				Max[i][j] = *(Queue[i]->getMax() + j);
+				Allocation[i][j] = *(Queue[i]->getAllocation() + j);
+				Need[i][j] = *(Queue[i]->getNeed() + j);
+			}
+		}
+		bool Finish[5] = { 0, 0, 0, 0, 0 };
+		for (int x = 0; x < 5; x++)
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				if (!Finish[i])
+				{
+					for (int j = 0; j < 3; j++)
+					{
+						if (Need[i][j]> Work[j]) break;
+						else
+						if (j == 2)
+						{
+							for (int k = 0; k < 3; k++)
+							{
+								Work[k] += Allocation[i][k];
+							}
+							Finish[i] = true;
+						}
+					}
+				}
+			}
+		}
+		int x = 0;
+		for (int i = 0; i < 5; i++)
+		{
+			if (Finish[i])
+				x++;
+		}
+		if (x == 5)
+			return true;
+		else
+			return false;
+	}
+	else
+		return false;
+
+};
+int main()
+{
+	int Available[3] = { 3, 3, 2 };
+	Process *Queue[5];
+	int InitM[5][3] = { { 7, 5, 3 }, { 3, 2, 2 }, { 9, 0, 2 }, { 2, 2, 2 }, { 4, 3, 3 } };
+	int InitA[5][3] = { { 0, 1, 0, }, { 2, 0, 0 }, { 3, 0, 2 }, { 2, 1, 1 }, { 0, 0, 2 } };
+	for (int i = 0; i < 5; i++)
+	{
+		Queue[i] = new Process(InitM[i], InitA[i]);
+	}
+	int req[3];
+	int x;
+	cout << "输入3个资源申请的数量" << endl;
+	for (int i = 0; i < 3;i++)
+	{
+		cin >> req[i];
+	}
+	cout << "输入进程号" << endl;
+	cin >> x;
+	if (Safety(Queue[x]->request(req), Available, Queue))
+	{
+		cout << "可以分配" << endl;
+		Queue[x]->distribute(req);
+		for (int i = 0; i < 3; i++)
+		{
+			Available[i] -= req[i];
+		}
+	}
+	else
+		cout << "不能分配" << endl;
+	cin >> x;
+	return 0;
+}
